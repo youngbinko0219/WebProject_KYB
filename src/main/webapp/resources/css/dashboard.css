@@ -1,0 +1,7 @@
+.card {
+    min-height: 200px; /* 모든 카드의 최소 높이를 동일하게 설정 */
+}
+
+.card-header, .list-group-item {
+    padding: 10px; /* 일관된 여백 설정 */
+}

@@ -1,0 +1,35 @@
+/* 대각선 그라데이션 배경 */
+body {
+    background: linear-gradient(135deg, #ffcccc, #cce5ff);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 로그인 버튼과 카드 헤더 색상 */
+.btn-login {
+    background-color: #ddbbdd;
+    border-color: #ddbbdd;
+    color: #fff;
+}
+
+/* 카드 헤더 기본 색상 설정 */
+.card-header {
+    background-color: #ddbbdd;
+    color: #fff;
+}
+
+/* 로그인 버튼 호버 색상 */
+.btn-login:hover {
+    background-color: #ffddff;
+    border-color: #ffddff;
+}
+
+/* 링크 색상 설정 */
+.custom-link {
+    color: #dd66bb;
+}
+.custom-link:hover {
+    color: #cc5599;
+}
