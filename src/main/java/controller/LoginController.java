@@ -31,9 +31,10 @@ public class LoginController extends HttpServlet {
 		if (user != null) { // 로그인 성공
 			HttpSession session = request.getSession();
 			session.setAttribute("user", user);
+			session.setAttribute("userId", user.getUserId());
 
 			// 대시보드 페이지로 리디렉션
-			response.sendRedirect(request.getContextPath() + "/views/board/dashboard/dashboard.jsp");
+			response.sendRedirect(request.getContextPath() + "/dashboard");
 		} else { // 로그인 실패
 			request.setAttribute("errorMessage", "아이디 또는 비밀번호가 올바르지 않습니다.");
 			request.getRequestDispatcher("/views/user/login.jsp").forward(request, response);

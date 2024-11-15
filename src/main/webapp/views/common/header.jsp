@@ -24,7 +24,7 @@ boolean isLoggedIn = (user != null);
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<div class="container">
 			<a class="navbar-brand"
-				href="${pageContext.request.contextPath}/views/board/dashboard.jsp">목차</a>
+				href="${pageContext.request.contextPath}/views/board/dashboard/dashboard.jsp">목차</a>
 			<button class="navbar-toggler" type="button"
 				data-bs-toggle="collapse" data-bs-target="#navbarNav"
 				aria-controls="navbarNav" aria-expanded="false"
@@ -34,13 +34,13 @@ boolean isLoggedIn = (user != null);
 			<div class="collapse navbar-collapse" id="navbarNav">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/views/board/dashboard.jsp">대시보드</a></li>
+						href="${pageContext.request.contextPath}/dashboard">대시보드</a></li>
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/views/board/freeBoard.jsp">자유게시판</a></li>
+						href="${pageContext.request.contextPath}/views/board/free/list.jsp">자유게시판</a></li>
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/views/board/dataBoard.jsp">자료실</a></li>
+						href="${pageContext.request.contextPath}/views/board/data/list.jsp">자료실</a></li>
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/views/board/qaBoard.jsp">질문
+						href="${pageContext.request.contextPath}/views/board/qa/list.jsp">질문
 							게시판</a></li>
 				</ul>
 				<ul class="navbar-nav">

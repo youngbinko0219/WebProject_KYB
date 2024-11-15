@@ -40,6 +40,11 @@ public class DashBoardController extends HttpServlet {
 		// 질문 게시판 최신 3개 글 가져오기
 		List<QaBoardDTO> latestQAPosts = qaBoardDAO.getLatestPosts(3);
 
+		// 디버깅 로그 출력
+		System.out.println("Latest FreeBoard Posts: " + latestFreePosts);
+		System.out.println("Latest DataBoard Posts: " + latestDataPosts);
+		System.out.println("Latest QABoard Posts: " + latestQAPosts);
+
 		// 요청 속성 설정
 		request.setAttribute("latestFreePosts", latestFreePosts);
 		request.setAttribute("latestDataPosts", latestDataPosts);
