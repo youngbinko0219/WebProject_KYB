@@ -3,23 +3,22 @@ package model;
 import java.sql.Timestamp;
 
 public class CommentDTO {
-	private int commentId;
-	private String boardType;
-	private int boardId;
-	private int userId;
-	private String content;
-	private Timestamp createdDate;
-	private Timestamp updatedDate;
+	private int commentId; // 댓글 ID
+	private int boardId; // 게시글 ID
+	private int userId; // 사용자 ID
+	private String content; // 댓글 내용
+	private Timestamp createdDate; // 생성 날짜
+	private Timestamp updatedDate; // 수정 날짜
+	private String username;
 
 	// 기본 생성자
 	public CommentDTO() {
 	}
 
 	// 모든 필드를 초기화하는 생성자
-	public CommentDTO(int commentId, String boardType, int boardId, int userId, String content, Timestamp createdDate,
+	public CommentDTO(int commentId, int boardId, int userId, String content, Timestamp createdDate,
 			Timestamp updatedDate) {
 		this.commentId = commentId;
-		this.boardType = boardType;
 		this.boardId = boardId;
 		this.userId = userId;
 		this.content = content;
@@ -34,14 +33,6 @@ public class CommentDTO {
 
 	public void setCommentId(int commentId) {
 		this.commentId = commentId;
-	}
-
-	public String getBoardType() {
-		return boardType;
-	}
-
-	public void setBoardType(String boardType) {
-		this.boardType = boardType;
 	}
 
 	public int getBoardId() {
@@ -82,5 +73,19 @@ public class CommentDTO {
 
 	public void setUpdatedDate(Timestamp updatedDate) {
 		this.updatedDate = updatedDate;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	@Override
+	public String toString() {
+		return "CommentDTO{" + "commentId=" + commentId + ", boardId=" + boardId + ", userId=" + userId + ", content='"
+				+ content + '\'' + ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + '}';
 	}
 }

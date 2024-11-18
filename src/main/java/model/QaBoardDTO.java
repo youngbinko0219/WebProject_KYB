@@ -3,30 +3,16 @@ package model;
 import java.util.Date;
 
 public class QaBoardDTO {
-	private int id;
-	private int userId;
-	private String title;
-	private String content;
-	private Date createdDate;
-	private Date updatedDate;
-	private int viewCount;
+	private int id; // 게시글 ID
+	private int userId; // 작성자 ID
+	private String username; // 작성자 이름 (추가)
+	private String title; // 제목
+	private String content; // 내용
+	private Date createdDate; // 작성일
+	private Date updatedDate; // 수정일
+	private int viewCount; // 조회수
 
-	// 기본 생성자
-	public QaBoardDTO() {
-	}
-
-	// 매개변수가 있는 생성자
-	public QaBoardDTO(int id, int userId, String title, String content, Date createdDate, Date updatedDate,
-			int viewCount) {
-		this.id = id;
-		this.userId = userId;
-		this.title = title;
-		this.content = content;
-		this.createdDate = createdDate;
-		this.updatedDate = updatedDate;
-		this.viewCount = viewCount;
-	}
-
+	// Getters and Setters
 	public int getId() {
 		return id;
 	}
@@ -41,6 +27,14 @@ public class QaBoardDTO {
 
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getTitle() {
@@ -82,5 +76,4 @@ public class QaBoardDTO {
 	public void setViewCount(int viewCount) {
 		this.viewCount = viewCount;
 	}
-
 }

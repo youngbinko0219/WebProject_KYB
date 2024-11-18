@@ -177,6 +177,20 @@ public class UserDAO {
 		return false;
 	}
 
+	public String getUsernameByUserId(int userId) {
+		String query = "SELECT username FROM users WHERE user_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, userId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getString("username");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null; // 해당 userId가 없을 경우 null 반환
+	}
+
 	// 자원 해제 메서드
 	public void close() {
 		db.close();

@@ -3,33 +3,35 @@ package model;
 import java.util.Date;
 
 public class FreeBoardDTO {
-	private int id;
-	private int userId;
-	private String title;
-	private String content;
-	private Date createdDate;
-	private Date updatedDate;
-	private int viewCount;
-	private int likeCount; // 좋아요 수 필드 추가
+	private int id; // 게시글 ID
+	private int userId; // 회원 번호
+	private String username; // 회원 아이디 (추가)
+	private String title; // 제목
+	private String content; // 내용
+	private Date createdDate; // 작성일
+	private Date updatedDate; // 수정일
+	private int viewCount; // 조회수
+	private int likeCount; // 좋아요 수
 
 	// 기본 생성자
 	public FreeBoardDTO() {
 	}
 
-	// 매개변수 있는 생성자
-	public FreeBoardDTO(int id, int userId, String title, String content, Date createdDate, Date updatedDate,
-			int viewCount, int likeCount) {
+	// 생성자
+	public FreeBoardDTO(int id, int userId, String username, String title, String content, Date createdDate,
+			Date updatedDate, int viewCount, int likeCount) {
 		this.id = id;
 		this.userId = userId;
+		this.username = username;
 		this.title = title;
 		this.content = content;
 		this.createdDate = createdDate;
 		this.updatedDate = updatedDate;
 		this.viewCount = viewCount;
-		this.likeCount = likeCount; // likeCount 초기화
+		this.likeCount = likeCount;
 	}
 
-	// Getter와 Setter 메서드
+	// Getter 및 Setter
 	public int getId() {
 		return id;
 	}
@@ -45,6 +47,14 @@ public class FreeBoardDTO {
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
+
+	public String getUsername() {
+		return username;
+	} // 추가
+
+	public void setUsername(String username) {
+		this.username = username;
+	} // 추가
 
 	public String getTitle() {
 		return title;
@@ -92,5 +102,5 @@ public class FreeBoardDTO {
 
 	public void setLikeCount(int likeCount) {
 		this.likeCount = likeCount;
-	} // 좋아요 수 setter
+	}
 }

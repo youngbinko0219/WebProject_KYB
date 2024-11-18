@@ -19,7 +19,8 @@ public class FreeBoardDAO {
 
 	// 게시글 목록 가져오기 (리스트 페이지에서 사용)
 	public List<FreeBoardDTO> getFreeBoardList(int offset, int limit) {
-		String query = "SELECT * FROM freeboard ORDER BY created_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+		String query = "SELECT id, user_id, username, title, created_date, view_count, like_count "
+				+ "FROM freeboard ORDER BY created_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 		List<FreeBoardDTO> list = new ArrayList<>();
 
 		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -28,10 +29,16 @@ public class FreeBoardDAO {
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				list.add(new FreeBoardDTO(rs.getInt("id"), rs.getInt("user_id"), rs.getString("title"),
-						rs.getString("content"), rs.getDate("created_date"), rs.getDate("updated_date"),
-						rs.getInt("view_count"), rs.getInt("like_count") // like_count 추가
-				));
+				FreeBoardDTO post = new FreeBoardDTO();
+				post.setId(rs.getInt("id"));
+				post.setUserId(rs.getInt("user_id"));
+				post.setUsername(rs.getString("username")); // username 추가
+				post.setTitle(rs.getString("title"));
+				post.setCreatedDate(rs.getDate("created_date"));
+				post.setViewCount(rs.getInt("view_count"));
+				post.setLikeCount(rs.getInt("like_count"));
+
+				list.add(post);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -56,16 +63,25 @@ public class FreeBoardDAO {
 
 	// 특정 게시글 조회 (상세 페이지에서 사용)
 	public FreeBoardDTO getPostById(int postId) {
-		String query = "SELECT * FROM freeboard WHERE id = ?";
+		String query = "SELECT id, user_id, username, title, content, created_date, updated_date, view_count, like_count "
+				+ "FROM freeboard WHERE id = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
 			pstmt.setInt(1, postId);
 			ResultSet rs = pstmt.executeQuery();
 
 			if (rs.next()) {
-				return new FreeBoardDTO(rs.getInt("id"), rs.getInt("user_id"), rs.getString("title"),
-						rs.getString("content"), rs.getDate("created_date"), rs.getDate("updated_date"),
-						rs.getInt("view_count"), rs.getInt("like_count") // 좋아요 수 포함
-				);
+				FreeBoardDTO post = new FreeBoardDTO();
+				post.setId(rs.getInt("id"));
+				post.setUserId(rs.getInt("user_id"));
+				post.setUsername(rs.getString("username")); // username 추가
+				post.setTitle(rs.getString("title"));
+				post.setContent(rs.getString("content"));
+				post.setCreatedDate(rs.getDate("created_date"));
+				post.setUpdatedDate(rs.getDate("updated_date"));
+				post.setViewCount(rs.getInt("view_count"));
+				post.setLikeCount(rs.getInt("like_count"));
+
+				return post;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -102,7 +118,8 @@ public class FreeBoardDAO {
 
 	// 최신 게시글 가져오기 (대시보드에서 사용 가능)
 	public List<FreeBoardDTO> getLatestPosts(int limit) {
-		String query = "SELECT * FROM freeboard ORDER BY created_date DESC FETCH FIRST ? ROWS ONLY";
+		String query = "SELECT id, user_id, username, title, created_date, view_count, like_count "
+				+ "FROM freeboard ORDER BY created_date DESC FETCH FIRST ? ROWS ONLY";
 		List<FreeBoardDTO> posts = new ArrayList<>();
 
 		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -110,9 +127,16 @@ public class FreeBoardDAO {
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				posts.add(new FreeBoardDTO(rs.getInt("id"), rs.getInt("user_id"), rs.getString("title"),
-						rs.getString("content"), rs.getDate("created_date"), rs.getDate("updated_date"),
-						rs.getInt("view_count"), rs.getInt("like_count")));
+				FreeBoardDTO post = new FreeBoardDTO();
+				post.setId(rs.getInt("id"));
+				post.setUserId(rs.getInt("user_id"));
+				post.setUsername(rs.getString("username")); // username 추가
+				post.setTitle(rs.getString("title"));
+				post.setCreatedDate(rs.getDate("created_date"));
+				post.setViewCount(rs.getInt("view_count"));
+				post.setLikeCount(rs.getInt("like_count"));
+
+				posts.add(post);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -123,14 +147,15 @@ public class FreeBoardDAO {
 
 	// 새로운 게시글 저장
 	public boolean createPost(FreeBoardDTO post) {
-		String query = "INSERT INTO freeboard (id, user_id, title, content, created_date, view_count, like_count) "
-				+ "VALUES (freeboard_id_seq.NEXTVAL, ?, ?, ?, ?, 0, 0)";
+		String query = "INSERT INTO freeboard (id, user_id, username, title, content, created_date, view_count, like_count) "
+				+ "VALUES (freeboard_id_seq.NEXTVAL, ?, ?, ?, ?, ?, 0, 0)";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
 			pstmt.setInt(1, post.getUserId());
-			pstmt.setString(2, post.getTitle());
-			pstmt.setString(3, post.getContent());
-			pstmt.setDate(4, new java.sql.Date(post.getCreatedDate().getTime())); // java.util.Date -> java.sql.Date 변환
+			pstmt.setString(2, post.getUsername()); // username 추가
+			pstmt.setString(3, post.getTitle());
+			pstmt.setString(4, post.getContent());
+			pstmt.setDate(5, new java.sql.Date(post.getCreatedDate().getTime())); // java.util.Date -> java.sql.Date 변환
 
 			return pstmt.executeUpdate() > 0;
 		} catch (SQLException e) {
@@ -175,4 +200,19 @@ public class FreeBoardDAO {
 		}
 		return false;
 	}
+
+	public String getUsernameByUserId(int userId) {
+		String query = "SELECT username FROM users WHERE user_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, userId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getString("username");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null; // 조회 실패 시 null 반환
+	}
+
 }

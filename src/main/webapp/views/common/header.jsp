@@ -24,7 +24,7 @@ boolean isLoggedIn = (user != null);
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<div class="container">
 			<a class="navbar-brand"
-				href="${pageContext.request.contextPath}/views/board/dashboard/dashboard.jsp">목차</a>
+				href="${pageContext.request.contextPath}/dashboard">목차</a>
 			<button class="navbar-toggler" type="button"
 				data-bs-toggle="collapse" data-bs-target="#navbarNav"
 				aria-controls="navbarNav" aria-expanded="false"
@@ -36,11 +36,13 @@ boolean isLoggedIn = (user != null);
 					<li class="nav-item"><a class="nav-link"
 						href="${pageContext.request.contextPath}/dashboard">대시보드</a></li>
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/views/board/free/list.jsp">자유게시판</a></li>
+						href="${pageContext.request.contextPath}/freeboard/list?page=1">자유게시판</a>
+					</li>
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/views/board/data/list.jsp">자료실</a></li>
+						href="${pageContext.request.contextPath}/databoard/list?page=1">자료실</a>
+					</li>
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/views/board/qa/list.jsp">질문
+						href="${pageContext.request.contextPath}/qaboard/list?page=1">질문
 							게시판</a></li>
 				</ul>
 				<ul class="navbar-nav">
@@ -53,13 +55,15 @@ boolean isLoggedIn = (user != null);
 							수정</a></li>
 					<!-- 로그아웃 버튼 -->
 					<li class="nav-item"><a class="nav-link text-danger"
-						href="${pageContext.request.contextPath}/LogoutController">로그아웃</a></li>
+						href="${pageContext.request.contextPath}/LogoutController">로그아웃</a>
+					</li>
 					<%
 					} else {
 					%>
 					<!-- 로그인 버튼 -->
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/views/user/login.jsp">로그인</a></li>
+						href="${pageContext.request.contextPath}/views/user/login.jsp">로그인</a>
+					</li>
 					<%
 					}
 					%>

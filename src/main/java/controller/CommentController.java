@@ -25,13 +25,20 @@ public class CommentController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String path = request.getPathInfo();
+		System.out.println("Path Info: " + path);
 
 		switch (path != null ? path : "") {
-		case "/add":
-			addComment(request, response);
+		case "/addFreeboard":
+			addFreeboardComment(request, response);
 			break;
-		case "/edit":
-			editComment(request, response);
+		case "/addQaboard":
+			addQaboardComment(request, response);
+			break;
+		case "/updateFreeboard":
+			updateFreeboardComment(request, response);
+			break;
+		case "/updateQaboard":
+			updateQaboardComment(request, response);
 			break;
 		default:
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -44,15 +51,19 @@ public class CommentController extends HttpServlet {
 		String path = request.getPathInfo();
 
 		switch (path != null ? path : "") {
-		case "/delete":
-			deleteComment(request, response);
+		case "/deleteFreeboard":
+			deleteFreeboardComment(request, response);
+			break;
+		case "/deleteQaboard":
+			deleteQaboardComment(request, response);
 			break;
 		default:
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}
 
-	private void addComment(HttpServletRequest request, HttpServletResponse response)
+	// 자유게시판 댓글 추가
+	private void addFreeboardComment(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		Integer userId = (Integer) session.getAttribute("userId");
@@ -63,27 +74,28 @@ public class CommentController extends HttpServlet {
 		}
 
 		try {
-			int postId = Integer.parseInt(request.getParameter("postId"));
+			int boardId = Integer.parseInt(request.getParameter("boardId"));
 			String content = request.getParameter("content");
 
 			CommentDTO comment = new CommentDTO();
-			comment.setBoardId(postId);
+			comment.setBoardId(boardId);
 			comment.setUserId(userId);
 			comment.setContent(content);
 
-			boolean success = commentDAO.addComment(comment);
+			boolean success = commentDAO.addFreeboardComment(comment);
 
 			if (success) {
-				response.sendRedirect(request.getContextPath() + "/freeboard/view?id=" + postId);
+				response.sendRedirect(request.getContextPath() + "/freeboard/view?id=" + boardId);
 			} else {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to add comment.");
 			}
 		} catch (NumberFormatException e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid post ID.");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid board ID.");
 		}
 	}
 
-	private void editComment(HttpServletRequest request, HttpServletResponse response)
+	// 질문게시판 댓글 추가
+	private void addQaboardComment(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		Integer userId = (Integer) session.getAttribute("userId");
@@ -94,22 +106,53 @@ public class CommentController extends HttpServlet {
 		}
 
 		try {
-			int commentId = Integer.parseInt(request.getParameter("id"));
+			int boardId = Integer.parseInt(request.getParameter("boardId"));
 			String content = request.getParameter("content");
 
-			CommentDTO existingComment = commentDAO.getCommentById(commentId);
+			CommentDTO comment = new CommentDTO();
+			comment.setBoardId(boardId);
+			comment.setUserId(userId);
+			comment.setContent(content);
 
-			if (existingComment == null || existingComment.getUserId() != userId) {
+			boolean success = commentDAO.addQaboardComment(comment);
+
+			if (success) {
+				response.sendRedirect(request.getContextPath() + "/qaboard/view?id=" + boardId);
+			} else {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to add comment.");
+			}
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid board ID.");
+		}
+	}
+
+	// 자유게시판 댓글 수정
+	private void updateFreeboardComment(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		Integer userId = (Integer) session.getAttribute("userId");
+
+		if (userId == null) {
+			response.sendRedirect(request.getContextPath() + "/views/user/login.jsp");
+			return;
+		}
+
+		try {
+			int commentId = Integer.parseInt(request.getParameter("commentId"));
+			String content = request.getParameter("content");
+
+			CommentDTO comment = commentDAO.getFreeboardCommentById(commentId);
+			if (comment == null || !Integer.valueOf(comment.getUserId()).equals(userId)) {
 				response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to edit this comment.");
 				return;
 			}
 
-			existingComment.setContent(content);
+			comment.setContent(content);
 
-			boolean success = commentDAO.updateComment(existingComment);
+			boolean success = commentDAO.updateFreeboardComment(comment);
 
 			if (success) {
-				response.sendRedirect(request.getContextPath() + "/freeboard/view?id=" + existingComment.getBoardId());
+				response.sendRedirect(request.getContextPath() + "/freeboard/view?id=" + comment.getBoardId());
 			} else {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to update comment.");
 			}
@@ -118,7 +161,8 @@ public class CommentController extends HttpServlet {
 		}
 	}
 
-	private void deleteComment(HttpServletRequest request, HttpServletResponse response)
+	// 질문게시판 댓글 수정
+	private void updateQaboardComment(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		Integer userId = (Integer) session.getAttribute("userId");
@@ -129,19 +173,85 @@ public class CommentController extends HttpServlet {
 		}
 
 		try {
-			int commentId = Integer.parseInt(request.getParameter("id"));
+			int commentId = Integer.parseInt(request.getParameter("commentId"));
+			String content = request.getParameter("content");
 
-			CommentDTO existingComment = commentDAO.getCommentById(commentId);
+			CommentDTO comment = commentDAO.getQaboardCommentById(commentId);
+			if (comment == null || !Integer.valueOf(comment.getUserId()).equals(userId)) {
+				response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to edit this comment.");
+				return;
+			}
 
-			if (existingComment == null || existingComment.getUserId() != userId) {
+			comment.setContent(content);
+
+			boolean success = commentDAO.updateQaboardComment(comment);
+
+			if (success) {
+				response.sendRedirect(request.getContextPath() + "/qaboard/view?id=" + comment.getBoardId());
+			} else {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to update comment.");
+			}
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid comment ID.");
+		}
+	}
+
+	// 자유게시판 댓글 삭제
+	private void deleteFreeboardComment(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		Integer userId = (Integer) session.getAttribute("userId");
+
+		if (userId == null) {
+			response.sendRedirect(request.getContextPath() + "/views/user/login.jsp");
+			return;
+		}
+
+		try {
+			int commentId = Integer.parseInt(request.getParameter("commentId"));
+
+			CommentDTO comment = commentDAO.getFreeboardCommentById(commentId);
+			if (comment == null || !Integer.valueOf(comment.getUserId()).equals(userId)) {
 				response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to delete this comment.");
 				return;
 			}
 
-			boolean success = commentDAO.deleteComment(commentId);
+			boolean success = commentDAO.deleteFreeboardComment(commentId);
 
 			if (success) {
-				response.sendRedirect(request.getContextPath() + "/freeboard/view?id=" + existingComment.getBoardId());
+				response.sendRedirect(request.getContextPath() + "/freeboard/view?id=" + comment.getBoardId());
+			} else {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to delete comment.");
+			}
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid comment ID.");
+		}
+	}
+
+	// 질문게시판 댓글 삭제
+	private void deleteQaboardComment(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		Integer userId = (Integer) session.getAttribute("userId");
+
+		if (userId == null) {
+			response.sendRedirect(request.getContextPath() + "/views/user/login.jsp");
+			return;
+		}
+
+		try {
+			int commentId = Integer.parseInt(request.getParameter("commentId"));
+
+			CommentDTO comment = commentDAO.getQaboardCommentById(commentId);
+			if (comment == null || !Integer.valueOf(comment.getUserId()).equals(userId)) {
+				response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to delete this comment.");
+				return;
+			}
+
+			boolean success = commentDAO.deleteQaboardComment(commentId);
+
+			if (success) {
+				response.sendRedirect(request.getContextPath() + "/qaboard/view?id=" + comment.getBoardId());
 			} else {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to delete comment.");
 			}

@@ -44,7 +44,8 @@
 								<td align="left"><a
 									href="${pageContext.request.contextPath}/freeboard/view?id=${post.id}"
 									class="text-decoration-none text-dark">${post.title}</a></td>
-								<td>${post.userId}</td>
+								<!-- userId 대신 username 표시 -->
+								<td>${post.username}</td>
 								<td>${post.viewCount}</td>
 								<td>${post.createdDate}</td>
 								<td>${post.likeCount}</td>
