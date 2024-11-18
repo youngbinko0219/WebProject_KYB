@@ -42,8 +42,7 @@ boolean isLoggedIn = (user != null);
 						href="${pageContext.request.contextPath}/databoard/list?page=1">자료실</a>
 					</li>
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/qaboard/list?page=1">질문
-							게시판</a></li>
+						href="${pageContext.request.contextPath}/qaboard/list?page=1">질문게시판</a></li>
 				</ul>
 				<ul class="navbar-nav">
 					<%
