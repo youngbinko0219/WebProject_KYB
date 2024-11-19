@@ -1,7 +1,56 @@
+/* 카드 스타일 */
 .card {
-    min-height: 200px; /* 모든 카드의 최소 높이를 동일하게 설정 */
+	border: 1px solid #ddbbdd;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+	background-color: #fff;
 }
 
-.card-header, .list-group-item {
-    padding: 10px; /* 일관된 여백 설정 */
+/* 자유게시판 헤더 */
+.card-header-freeboard {
+	background-color: #fbe8f8;
+	color: #333;
+	font-weight: bold;
+	text-align: center;
+	padding: 10px;
+}
+
+/* 자료실 헤더 */
+.card-header-databoard {
+	background-color: #e6cce6;
+	color: #333;
+	font-weight: bold;
+	text-align: center;
+	padding: 10px;
+}
+
+/* 리스트 그룹 아이템 */
+.list-group-item {
+	display: flex;
+	align-items: center;
+	padding: 10px;
+	border: 1px solid #ddbbdd;
+	background-color: #ffffff;
+}
+
+/* 고정된 열 너비 */
+.fixed-width {
+	width: 100px; /* 작성자, 날짜, 조회수 고정 너비 */
+	text-align: right;
+	margin-left: 10px;
+}
+
+/* 제목 영역 확장 */
+.title {
+	flex-grow: 1; /* 제목 영역 확장 */
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis; /* 제목이 너무 길 경우 말줄임표 처리 */
+}
+
+/* 리스트 그룹 아이템 호버 효과 */
+.list-group-item:hover {
+	background-color: #ffe6f5;
+	cursor: pointer;
 }

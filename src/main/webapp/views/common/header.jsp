@@ -13,7 +13,7 @@ boolean isLoggedIn = (user != null);
 <!-- Meta tags for responsive behavior -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Navigation</title>
+
 
 <!-- Bootstrap 5 CSS -->
 <link

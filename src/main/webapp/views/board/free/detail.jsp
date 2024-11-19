@@ -6,21 +6,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>게시글 상세보기</title>
+<title>자유게시판 상세보기</title>
 <!-- Bootstrap 5 CSS -->
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
+<style>
+/* 댓글 스타일 */
+.comment-content {
+	border: none;
+	background-color: transparent;
+	resize: none;
+	box-shadow: none;
+	width: 100%;
+}
+
+.comment-content:focus {
+	outline: none;
+	border: 1px solid #ccc;
+	background-color: #f8f9fa;
+}
+
+.comment-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+</style>
 </head>
 <body>
 	<div class="container my-4">
 		<h2 class="mb-3">${post.title}</h2>
-		<p class="text-muted">작성자: ${post.username} | 작성일:
-			${post.createdDate} | 조회수: ${post.viewCount} | 좋아요: ${post.likeCount}</p>
+		<p class="text-muted">
+			작성자: ${post.username} | 작성일: ${post.createdDate} | 조회수:
+			${post.viewCount} | 좋아요: <span id="likeCount">${post.likeCount}</span>
+		</p>
 		<hr>
 		<div class="content mb-5">
 			<p>${post.content}</p>
 		</div>
+
+		<!-- 좋아요 버튼 -->
+		<c:if test="${sessionScope.userId != null}">
+			<div class="d-flex justify-content-end mb-3">
+				<form action="${pageContext.request.contextPath}/freeboard/like"
+					method="post">
+					<input type="hidden" name="id" value="${post.id}">
+					<button type="submit"
+						class="btn ${liked ? 'btn-danger' : 'btn-primary'}">
+						<c:if test="${liked}">좋아요 취소</c:if>
+						<c:if test="${!liked}">좋아요</c:if>
+					</button>
+				</form>
+			</div>
+		</c:if>
+
+		<!-- 수정 및 삭제 버튼 -->
 		<div class="d-flex justify-content-end">
 			<c:if
 				test="${sessionScope.userId != null && sessionScope.userId == post.userId}">
@@ -41,17 +82,30 @@
 			<c:when test="${!empty comments}">
 				<c:forEach var="comment" items="${comments}">
 					<li class="list-group-item">
-						<p>${comment.content}</p> <small class="text-muted"> 작성자:
-							${comment.username} | 작성일: ${comment.createdDate} </small> <c:if
-							test="${sessionScope.userId != null && sessionScope.userId == comment.userId}">
-							<div class="d-flex justify-content-end mt-2">
-								<a
-									href="${pageContext.request.contextPath}/comment/updateFreeboard?commentId=${comment.commentId}"
-									class="btn btn-warning btn-sm me-2">수정</a> <a
-									href="${pageContext.request.contextPath}/comment/deleteFreeboard?commentId=${comment.commentId}"
-									class="btn btn-danger btn-sm">삭제</a>
+						<form id="comment-form-${comment.commentId}" method="post"
+							action="${pageContext.request.contextPath}/comment/updateFreeboard"
+							class="d-flex flex-column gap-2">
+							<!-- 댓글 내용 -->
+							<textarea name="content" class="comment-content" rows="1"
+								readonly>${comment.content}</textarea>
+							<small class="text-muted">작성자: ${comment.username} | 작성일:
+								${comment.createdDate}</small>
+
+							<!-- 댓글 액션 버튼 -->
+							<div class="comment-actions">
+								<c:if
+									test="${sessionScope.userId != null && sessionScope.userId == comment.userId}">
+									<button type="button" class="btn btn-warning btn-sm edit-btn">수정</button>
+									<button type="submit"
+										class="btn btn-primary btn-sm save-btn d-none">저장</button>
+									<a
+										href="${pageContext.request.contextPath}/comment/deleteFreeboard?commentId=${comment.commentId}"
+										class="btn btn-danger btn-sm">삭제</a>
+								</c:if>
+								<input type="hidden" name="commentId"
+									value="${comment.commentId}">
 							</div>
-						</c:if>
+						</form>
 					</li>
 				</c:forEach>
 			</c:when>
@@ -85,16 +139,49 @@
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
-    const deleteButton = document.getElementById("deleteButton");
-    if (deleteButton) {
-      deleteButton.addEventListener("click", function(event) {
-        event.preventDefault(); // 기본 동작 방지
-        const isConfirmed = confirm("정말 삭제하시겠습니까?");
-        if (isConfirmed) {
-          window.location.href = "${pageContext.request.contextPath}/freeboard/delete?id=${post.id}";
+        // 댓글 수정 모드 전환
+        document.addEventListener("DOMContentLoaded", () => {
+            const editButtons = document.querySelectorAll(".edit-btn");
+            const saveButtons = document.querySelectorAll(".save-btn");
+
+            editButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    const form = button.closest("form");
+                    const textarea = form.querySelector(".comment-content");
+                    const saveButton = form.querySelector(".save-btn");
+
+                    // 수정 모드 활성화
+                    textarea.removeAttribute("readonly");
+                    textarea.focus();
+                    button.classList.add("d-none");
+                    saveButton.classList.remove("d-none");
+                });
+            });
+
+            saveButtons.forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    const form = button.closest("form");
+                    const textarea = form.querySelector(".comment-content");
+
+                    // 저장 버튼 클릭 시 내용 확인
+                    if (textarea.value.trim() === "") {
+                        alert("댓글 내용을 입력해주세요.");
+                        event.preventDefault(); // 폼 전송 방지
+                    }
+                });
+            });
+        });
+
+        const deleteButton = document.getElementById("deleteButton");
+        if (deleteButton) {
+            deleteButton.addEventListener("click", function(event) {
+                event.preventDefault(); // 기본 동작 방지
+                const isConfirmed = confirm("정말 삭제하시겠습니까?");
+                if (isConfirmed) {
+                    window.location.href = "${pageContext.request.contextPath}/freeboard/delete?id=${post.id}";
+                }
+            });
         }
-      });
-    }
-  </script>
+    </script>
 </body>
 </html>

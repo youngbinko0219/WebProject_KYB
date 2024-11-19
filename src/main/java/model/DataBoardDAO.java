@@ -17,8 +17,118 @@ public class DataBoardDAO {
 		this.conn = db.con;
 	}
 
+	// 게시글 목록 가져오기 (리스트 페이지에서 사용)
+	public List<DataBoardDTO> getDataBoardList(int offset, int limit) {
+		String query = "SELECT d.*, u.username " + "FROM databoard d " + "LEFT JOIN users u ON d.user_id = u.user_id "
+				+ "ORDER BY d.created_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+		List<DataBoardDTO> list = new ArrayList<>();
+
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, offset);
+			pstmt.setInt(2, limit);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				list.add(mapRowToDataBoardDTO(rs));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+
+	// 특정 게시글 가져오기 (상세보기 페이지에서 사용)
+	public DataBoardDTO getDataBoardById(int id) {
+		String query = "SELECT d.*, u.username " + "FROM databoard d " + "LEFT JOIN users u ON d.user_id = u.user_id "
+				+ "WHERE d.id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				return mapRowToDataBoardDTO(rs);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	// 게시글 생성
+	public boolean createDataBoardPost(DataBoardDTO post) {
+		String query = "INSERT INTO databoard (id, user_id, title, content, original_filename, "
+				+ "stored_filename, created_date, view_count) "
+				+ "VALUES (databoard_id_seq.NEXTVAL, ?, ?, ?, ?, ?, SYSDATE, 0)";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, post.getUserId());
+			pstmt.setString(2, post.getTitle());
+			pstmt.setString(3, post.getContent());
+			pstmt.setString(4, post.getOriginalFilename());
+			pstmt.setString(5, post.getStoredFilename());
+
+			return pstmt.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	// 게시글 수정
+	public boolean updateDataBoardPost(DataBoardDTO post) {
+		String query = "UPDATE databoard SET title = ?, content = ?, original_filename = ?, "
+				+ "stored_filename = ?, updated_date = SYSDATE WHERE id = ?";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setString(1, post.getTitle());
+			pstmt.setString(2, post.getContent());
+			pstmt.setString(3, post.getOriginalFilename());
+			pstmt.setString(4, post.getStoredFilename());
+			pstmt.setInt(5, post.getId());
+
+			return pstmt.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	// 게시글 삭제
+	public boolean deleteDataBoardPost(int id) {
+		String query = "DELETE FROM databoard WHERE id = ?";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, id);
+			return pstmt.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	// 게시글 조회수 증가
+	public boolean incrementViewCount(int id) {
+		String query = "UPDATE databoard SET view_count = view_count + 1 WHERE id = ?";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, id);
+			return pstmt.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	// 최신 게시글 가져오기 (대시보드에서 사용)
 	public List<DataBoardDTO> getLatestPosts(int limit) {
-		String query = "SELECT * FROM databoard ORDER BY created_date DESC FETCH FIRST ? ROWS ONLY";
+		String query = "SELECT d.*, u.username " + "FROM databoard d " + "LEFT JOIN users u ON d.user_id = u.user_id "
+				+ "ORDER BY d.created_date DESC FETCH FIRST ? ROWS ONLY";
 		List<DataBoardDTO> posts = new ArrayList<>();
 
 		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -26,14 +136,55 @@ public class DataBoardDAO {
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				posts.add(new DataBoardDTO(rs.getInt("id"), rs.getInt("user_id"), rs.getString("title"),
-						rs.getString("content"), rs.getDate("created_date"), rs.getDate("updated_date"),
-						rs.getString("original_filename"), rs.getString("stored_filename"), rs.getInt("view_count")));
+				posts.add(mapRowToDataBoardDTO(rs));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		return posts;
+	}
+
+	// Helper Method: ResultSet을 DataBoardDTO로 매핑
+	private DataBoardDTO mapRowToDataBoardDTO(ResultSet rs) throws SQLException {
+		DataBoardDTO post = new DataBoardDTO();
+		post.setId(rs.getInt("id"));
+		post.setUserId(rs.getInt("user_id"));
+		post.setUsername(rs.getString("username")); // JOIN된 username
+		post.setTitle(rs.getString("title"));
+		post.setContent(rs.getString("content"));
+		post.setOriginalFilename(rs.getString("original_filename"));
+		post.setStoredFilename(rs.getString("stored_filename"));
+		post.setCreatedDate(rs.getDate("created_date"));
+		post.setUpdatedDate(rs.getDate("updated_date"));
+		post.setViewCount(rs.getInt("view_count"));
+		return post;
+	}
+
+	public DataBoardDTO getPostById(int postId) {
+		String query = "SELECT * FROM databoard WHERE id = ?";
+		DataBoardDTO post = null;
+
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, postId);
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				post = new DataBoardDTO();
+				post.setId(rs.getInt("id"));
+				post.setUserId(rs.getInt("user_id"));
+				post.setTitle(rs.getString("title"));
+				post.setContent(rs.getString("content"));
+				post.setOriginalFilename(rs.getString("original_filename"));
+				post.setStoredFilename(rs.getString("stored_filename"));
+				post.setCreatedDate(rs.getDate("created_date"));
+				post.setUpdatedDate(rs.getDate("updated_date"));
+				post.setViewCount(rs.getInt("view_count"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return post;
 	}
 }

@@ -3,34 +3,37 @@ package model;
 import java.util.Date;
 
 public class DataBoardDTO {
-	private int id;
-	private int userId;
-	private String title;
-	private String content;
-	private Date createdDate;
-	private Date updatedDate;
-	private String originalFilename;
-	private String storedFilename;
-	private int viewCount;
+	private int id; // 게시글 ID
+	private int userId; // 작성자 ID
+	private String username; // 작성자 이름 (추가)
+	private String title; // 제목
+	private String content; // 내용
+	private String originalFilename; // 업로드된 파일의 원본 이름
+	private String storedFilename; // 서버에 저장된 파일 이름
+	private Date createdDate; // 작성일
+	private Date updatedDate; // 수정일
+	private int viewCount; // 조회수
 
 	// 기본 생성자
 	public DataBoardDTO() {
 	}
 
-	// 매개변수가 있는 생성자
-	public DataBoardDTO(int id, int userId, String title, String content, Date createdDate, Date updatedDate,
-			String originalFilename, String storedFilename, int viewCount) {
+	// 생성자
+	public DataBoardDTO(int id, int userId, String username, String title, String content, String originalFilename,
+			String storedFilename, Date createdDate, Date updatedDate, int viewCount) {
 		this.id = id;
 		this.userId = userId;
+		this.username = username;
 		this.title = title;
 		this.content = content;
-		this.createdDate = createdDate;
-		this.updatedDate = updatedDate;
 		this.originalFilename = originalFilename;
 		this.storedFilename = storedFilename;
+		this.createdDate = createdDate;
+		this.updatedDate = updatedDate;
 		this.viewCount = viewCount;
 	}
 
+	// Getter와 Setter 메서드
 	public int getId() {
 		return id;
 	}
@@ -45,6 +48,14 @@ public class DataBoardDTO {
 
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getTitle() {
@@ -63,22 +74,6 @@ public class DataBoardDTO {
 		this.content = content;
 	}
 
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public Date getUpdatedDate() {
-		return updatedDate;
-	}
-
-	public void setUpdatedDate(Date updatedDate) {
-		this.updatedDate = updatedDate;
-	}
-
 	public String getOriginalFilename() {
 		return originalFilename;
 	}
@@ -95,6 +90,22 @@ public class DataBoardDTO {
 		this.storedFilename = storedFilename;
 	}
 
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public Date getUpdatedDate() {
+		return updatedDate;
+	}
+
+	public void setUpdatedDate(Date updatedDate) {
+		this.updatedDate = updatedDate;
+	}
+
 	public int getViewCount() {
 		return viewCount;
 	}
@@ -103,4 +114,11 @@ public class DataBoardDTO {
 		this.viewCount = viewCount;
 	}
 
+	@Override
+	public String toString() {
+		return "DataBoardDTO [id=" + id + ", userId=" + userId + ", username=" + username + ", title=" + title
+				+ ", content=" + content + ", originalFilename=" + originalFilename + ", storedFilename="
+				+ storedFilename + ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + ", viewCount="
+				+ viewCount + "]";
+	}
 }

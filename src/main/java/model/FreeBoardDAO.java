@@ -215,4 +215,16 @@ public class FreeBoardDAO {
 		return null; // 조회 실패 시 null 반환
 	}
 
+	// 특정 게시글의 좋아요 수 감소 (좋아요 취소 기능)
+	public boolean decrementLikeCount(int postId) {
+		String query = "UPDATE freeboard SET like_count = like_count - 1 WHERE id = ? AND like_count > 0";
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, postId);
+			return pstmt.executeUpdate() > 0; // 업데이트 성공 여부 반환
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 }

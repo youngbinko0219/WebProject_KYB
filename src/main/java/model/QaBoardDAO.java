@@ -147,7 +147,7 @@ public class QaBoardDAO {
 
 	// 최신 게시글 가져오기 (대시보드에서 사용)
 	public List<QaBoardDTO> getLatestPosts(int limit) {
-		String query = "SELECT q.id, q.title, q.created_date, u.username " + "FROM qaboard q "
+		String query = "SELECT q.id, q.title, q.created_date, q.view_count, u.username " + "FROM qaboard q "
 				+ "LEFT JOIN users u ON q.user_id = u.user_id "
 				+ "ORDER BY q.created_date DESC FETCH FIRST ? ROWS ONLY";
 		List<QaBoardDTO> latestPosts = new ArrayList<>();
@@ -161,7 +161,8 @@ public class QaBoardDAO {
 				post.setId(rs.getInt("id"));
 				post.setTitle(rs.getString("title"));
 				post.setCreatedDate(rs.getDate("created_date"));
-				post.setUsername(rs.getString("username")); // Username from join
+				post.setUsername(rs.getString("username"));
+				post.setViewCount(rs.getInt("view_count"));
 
 				latestPosts.add(post);
 			}

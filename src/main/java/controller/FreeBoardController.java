@@ -9,10 +9,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.CommentDAO;
-import model.CommentDTO;
 import model.FreeBoardDAO;
 import model.FreeBoardDTO;
+import util.CookieUtil;
 
 @WebServlet("/freeboard/*")
 public class FreeBoardController extends HttpServlet {
@@ -37,7 +36,7 @@ public class FreeBoardController extends HttpServlet {
 			viewPost(request, response);
 			break;
 		case "/like":
-			incrementLike(request, response);
+			toggleLike(request, response); // 좋아요 토글 메서드 추가
 			break;
 		case "/write":
 			showWritePage(request, response);
@@ -48,6 +47,7 @@ public class FreeBoardController extends HttpServlet {
 		case "/edit":
 			showEditPage(request, response);
 			break;
+
 		default:
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			break;
@@ -65,6 +65,9 @@ public class FreeBoardController extends HttpServlet {
 			break;
 		case "/edit":
 			editPost(request, response);
+			break;
+		case "/like":
+			toggleLike(request, response); // 좋아요 토글 처리
 			break;
 		default:
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -152,16 +155,15 @@ public class FreeBoardController extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			int postId = Integer.parseInt(request.getParameter("id"));
-
-			freeBoardDAO.incrementViewCount(postId);
-
 			FreeBoardDTO post = freeBoardDAO.getPostById(postId);
 
 			if (post != null) {
 				request.setAttribute("post", post);
 
-				List<CommentDTO> comments = new CommentDAO().getFreeboardComments(postId);
-				request.setAttribute("comments", comments);
+				// 좋아요 여부 확인 (로그인한 사용자와 쿠키 기반)
+				String cookieName = "liked_posts";
+				boolean liked = CookieUtil.containsValue(request, cookieName, String.valueOf(postId));
+				request.setAttribute("liked", liked); // 좋아요 상태 전달
 
 				request.getRequestDispatcher("/views/board/free/detail.jsp").forward(request, response);
 			} else {
@@ -175,22 +177,33 @@ public class FreeBoardController extends HttpServlet {
 		}
 	}
 
-	// 좋아요 수 증가
-	private void incrementLike(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private void toggleLike(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		try {
 			int postId = Integer.parseInt(request.getParameter("id"));
-			boolean success = freeBoardDAO.incrementLikeCount(postId);
 
-			if (success) {
-				response.sendRedirect(request.getContextPath() + "/freeboard/view?id=" + postId);
+			// 쿠키 이름
+			String cookieName = "liked_posts";
+
+			// 게시글 ID가 쿠키에 포함되어 있는지 확인
+			boolean hasLiked = CookieUtil.containsValue(request, cookieName, String.valueOf(postId));
+
+			if (hasLiked) {
+				// 좋아요 취소
+				freeBoardDAO.decrementLikeCount(postId); // 좋아요 수 감소
+				CookieUtil.removeValue(request, response, cookieName, String.valueOf(postId)); // 쿠키에서 제거
 			} else {
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to increment like count.");
+				// 좋아요 추가
+				freeBoardDAO.incrementLikeCount(postId); // 좋아요 수 증가
+				CookieUtil.addValue(request, response, cookieName, String.valueOf(postId)); // 쿠키에 추가
 			}
+
+			// 페이지 리다이렉트
+			response.sendRedirect(request.getContextPath() + "/freeboard/view?id=" + postId);
 		} catch (NumberFormatException e) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid post ID.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing like increment.");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing like toggle.");
 		}
 	}
 

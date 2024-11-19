@@ -14,6 +14,7 @@ import model.CommentDTO;
 import model.QaBoardDAO;
 import model.QaBoardDTO;
 import model.UserDAO;
+import util.CookieUtil;
 
 @WebServlet("/qaboard/*")
 public class QaBoardController extends HttpServlet {
@@ -147,14 +148,21 @@ public class QaBoardController extends HttpServlet {
 		try {
 			int postId = Integer.parseInt(request.getParameter("id"));
 
-			// 조회수 증가
-			qaBoardDAO.incrementViewCount(postId);
+			// 쿠키 이름 설정 (예: "viewed_qa_post_{postId}")
+			String cookieName = "viewed_qa_post_" + postId;
+
+			// 쿠키를 통해 조회수 증가 여부 확인
+			if (CookieUtil.isCookieExpired(request, cookieName)) {
+				// 조회수 증가 및 쿠키 설정
+				qaBoardDAO.incrementViewCount(postId);
+				CookieUtil.setCookie(response, cookieName, System.currentTimeMillis());
+			}
 
 			// 게시글 상세 정보 조회
 			QaBoardDTO post = qaBoardDAO.getPostById(postId);
 
 			// 댓글 리스트 조회
-			CommentDAO commentDAO = new CommentDAO(); // 인스턴스 생성
+			CommentDAO commentDAO = new CommentDAO();
 			List<CommentDTO> comments = commentDAO.getQABoardComments(postId);
 
 			if (post != null) {
