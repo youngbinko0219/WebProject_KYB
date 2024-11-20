@@ -1,0 +1,29 @@
+/* footer.css */
+
+/* 푸터 배경색 */
+.footer {
+	background-color: #333333; /* 어두운 회색 */
+	color: #ffffff; /* 흰색 텍스트 */
+	padding: 20px 0;
+}
+
+/* 푸터 링크 스타일 */
+.footer a {
+	color: #ffffff;
+	text-decoration: none;
+	margin-right: 15px;
+}
+
+.footer a:hover {
+	text-decoration: underline;
+	color: #cccccc; /* 연한 회색 */
+}
+
+/* 연락처 정보 스타일 */
+.footer .footer-info p {
+	margin: 5px 0;
+}
+
+.footer .footer-info i {
+	margin-right: 8px;
+}

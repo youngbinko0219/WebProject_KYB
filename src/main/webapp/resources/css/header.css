@@ -1,0 +1,64 @@
+/* header.css */
+
+/* 네이버 스타일 헤더 배경색 */
+nav.navbar {
+	background-color: #2DB400; /* 네이버 그린 */
+	border-bottom: 1px solid #219100 !important; /* 약간 더 진한 그린 */
+}
+
+/* 네비게이션 링크 스타일 */
+nav.navbar-nav .nav-link {
+	color: #ffffff !important; /* 흰색 텍스트 */
+	margin-right: 15px;
+}
+
+nav.navbar-nav .nav-link:hover {
+	color: #e0ffe0; /* 연한 녹색 */
+}
+
+/* 브랜드 로고 스타일 */
+.navbar-brand {
+	color: #ffffff; /* 흰색 텍스트 */
+	font-weight: bold;
+}
+
+.navbar-brand:hover {
+	color: #e0ffe0; /* 연한 녹색 */
+}
+
+/* 검색 바 스타일 */
+.search-bar input[type="text"] {
+	border-radius: 20px;
+	padding: 5px 15px;
+	border: none;
+}
+
+.search-bar button {
+	background: none;
+	border: none;
+	color: rgb(0, 0, 0) !important;
+}
+
+.search-bar button:hover {
+	color: #e0ffe0;
+}
+
+/* 사용자 메뉴 스타일 */
+.user-menu .nav-link {
+  padding: 0 8px !important;
+  color: #ffffff !important;
+}
+
+.user-menu .nav-link:hover {
+	color: #e0ffe0;
+}
+
+/* 모바일 토글 버튼 스타일 */
+.navbar-toggler {
+	border-color: #ffffff;
+}
+
+.navbar-toggler-icon {
+	background-image:
+		url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}

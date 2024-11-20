@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.CommentDAO;
+import model.CommentDTO;
 import model.FreeBoardDAO;
 import model.FreeBoardDTO;
 import util.CookieUtil;
@@ -155,25 +157,26 @@ public class FreeBoardController extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			int postId = Integer.parseInt(request.getParameter("id"));
+
+			// 게시글 상세 정보 조회
 			FreeBoardDTO post = freeBoardDAO.getPostById(postId);
+
+			// 댓글 리스트 조회 추가
+			CommentDAO commentDAO = new CommentDAO();
+			List<CommentDTO> comments = commentDAO.getFreeboardComments(postId);
 
 			if (post != null) {
 				request.setAttribute("post", post);
-
-				// 좋아요 여부 확인 (로그인한 사용자와 쿠키 기반)
-				String cookieName = "liked_posts";
-				boolean liked = CookieUtil.containsValue(request, cookieName, String.valueOf(postId));
-				request.setAttribute("liked", liked); // 좋아요 상태 전달
-
+				request.setAttribute("comments", comments); // 댓글 전달
 				request.getRequestDispatcher("/views/board/free/detail.jsp").forward(request, response);
 			} else {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Post not found.");
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Post not found");
 			}
 		} catch (NumberFormatException e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid post ID.");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid post ID");
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading post details.");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading post details");
 		}
 	}
 

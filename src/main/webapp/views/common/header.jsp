@@ -14,55 +14,86 @@ boolean isLoggedIn = (user != null);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
 <!-- Bootstrap 5 CSS -->
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+
+<!-- Custom CSS -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/header.css">
+
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<!-- 상단 바 -->
+	<nav
+		class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
 		<div class="container">
+			<!-- 로고 -->
 			<a class="navbar-brand"
-				href="${pageContext.request.contextPath}/dashboard">목차</a>
+				href="${pageContext.request.contextPath}/dashboard">게시판</a>
+
+			<!-- 검색 바 -->
+			<div class="search-bar d-none d-lg-block me-auto">
+				<form action="${pageContext.request.contextPath}/search"
+					method="get">
+					<div class="input-group">
+						<input type="text" class="form-control"
+							placeholder="제목 검색어를 입력하세요" name="query">
+						<button class="btn btn-outline-secondary" type="submit">
+							<i class="bi bi-search"></i>
+						</button>
+					</div>
+				</form>
+			</div>
+
+			<!-- 모바일 토글 버튼 -->
 			<button class="navbar-toggler" type="button"
 				data-bs-toggle="collapse" data-bs-target="#navbarNav"
 				aria-controls="navbarNav" aria-expanded="false"
 				aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>
+
+			<!-- 네비게이션 메뉴 -->
 			<div class="collapse navbar-collapse" id="navbarNav">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/dashboard">대시보드</a></li>
+						href="${pageContext.request.contextPath}/dashboard">홈</a></li>
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/freeboard/list?page=1">자유게시판</a>
-					</li>
+						href="${pageContext.request.contextPath}/freeboard/list?page=1">자유게시판</a></li>
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/databoard/list?page=1">자료실</a>
-					</li>
+						href="${pageContext.request.contextPath}/databoard/list?page=1">자료실</a></li>
 					<li class="nav-item"><a class="nav-link"
 						href="${pageContext.request.contextPath}/qaboard/list?page=1">질문게시판</a></li>
 				</ul>
-				<ul class="navbar-nav">
+
+				<!-- 사용자 메뉴 -->
+				<ul class="navbar-nav ms-auto">
 					<%
 					if (isLoggedIn) {
 					%>
-					<!-- 프로필 수정 버튼 -->
+					<!-- 프로필 이름 -->
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/views/user/profile.jsp">프로필
-							수정</a></li>
-					<!-- 로그아웃 버튼 -->
+						href="${pageContext.request.contextPath}/views/user/profile.jsp">
+							<i class="bi bi-person-circle"></i> ${user.getUsername()}
+					</a></li>
+					<!-- 로그아웃 -->
 					<li class="nav-item"><a class="nav-link text-danger"
-						href="${pageContext.request.contextPath}/LogoutController">로그아웃</a>
-					</li>
+						href="${pageContext.request.contextPath}/LogoutController"> <i
+							class="bi bi-box-arrow-right"></i> 로그아웃
+					</a></li>
 					<%
 					} else {
 					%>
-					<!-- 로그인 버튼 -->
+					<!-- 로그인 -->
 					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/views/user/login.jsp">로그인</a>
-					</li>
+						href="${pageContext.request.contextPath}/views/user/login.jsp">
+							<i class="bi bi-box-arrow-in-right"></i> 로그인
+					</a></li>
 					<%
 					}
 					%>
