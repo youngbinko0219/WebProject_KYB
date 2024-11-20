@@ -30,7 +30,7 @@ nav.navbar-nav .nav-link:hover {
 .search-bar input[type="text"] {
 	border-radius: 20px;
 	padding: 5px 15px;
-	border: none;
+	border: 1px solid #219100;
 }
 
 .search-bar button {

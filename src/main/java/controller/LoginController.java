@@ -32,6 +32,8 @@ public class LoginController extends HttpServlet {
 			HttpSession session = request.getSession();
 			session.setAttribute("user", user);
 			session.setAttribute("userId", user.getUserId());
+			session.setAttribute("loginSuccess", true);
+			session.setAttribute("username", user.getUsername());
 
 			// 대시보드 페이지로 리디렉션
 			response.sendRedirect(request.getContextPath() + "/dashboard");

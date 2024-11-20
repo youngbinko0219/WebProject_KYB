@@ -16,13 +16,32 @@
 	href="${pageContext.request.contextPath}/resources/css/dashboard.css">
 </head>
 <body>
-	<!-- Dashboard Header -->
-	<header class="bg-light p-3 mb-4">
-		<h2 class="text-center">대시보드</h2>
-	</header>
 
 	<div class="container my-4">
+		<!-- Dashboard Header -->
+		<header class="bg-light p-3 mb-4">
+			<h2 class="text-start">대시보드</h2>
+		</header>
+
+		<!-- 수정 완료 알림 표시 -->
+		<c:if test="${sessionScope.updateSuccess}">
+			<script>
+        alert('수정 완료되었습니다.');
+      </script>
+			<c:remove var="updateSuccess" scope="session" />
+		</c:if>
 		<div class="row">
+
+			<!-- 로그인 성공 알림 표시 -->
+			<c:if test="${sessionScope.loginSuccess}">
+				<script>
+          alert('${sessionScope.username}님 환영합니다.');
+        </script>
+				<!-- 세션에서 속성 제거 -->
+				<c:remove var="loginSuccess" scope="session" />
+				<c:remove var="username" scope="session" />
+			</c:if>
+
 			<!-- 자유게시판 -->
 			<div class="col-12 mb-4">
 				<div class="card w-100">

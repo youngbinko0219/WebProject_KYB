@@ -1,8 +1,8 @@
 package model;
 
 public class UserDTO {
-	private int userId;
-	private String username;
+	private int userId; // 고유번호
+	private String username; // 아이디
 	private String password;
 	private String email;
 	private String fullName; // 사용자 이름

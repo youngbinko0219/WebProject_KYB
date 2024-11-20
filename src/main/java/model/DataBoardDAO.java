@@ -188,16 +188,45 @@ public class DataBoardDAO {
 		return post;
 	}
 
-	public List<DataBoardDTO> searchPosts(String query) {
+	public List<DataBoardDTO> searchPostsByTitle(String query) {
 		List<DataBoardDTO> results = new ArrayList<>();
-		String sql = "SELECT * FROM databoard WHERE title LIKE ? OR content LIKE ?";
+		String sql = "SELECT * FROM databoard WHERE title LIKE ?";
 
 		DBConnection db = new DBConnection();
 		try {
 			db.prepareStatement(sql);
 			String keyword = "%" + query + "%";
 			db.psmt.setString(1, keyword);
-			db.psmt.setString(2, keyword);
+
+			db.rs = db.psmt.executeQuery();
+			while (db.rs.next()) {
+				DataBoardDTO post = new DataBoardDTO();
+				// db.rs에서 데이터 추출하여 post 객체에 설정
+				post.setId(db.rs.getInt("id"));
+				post.setTitle(db.rs.getString("title"));
+				post.setContent(db.rs.getString("content"));
+				post.setUserId(db.rs.getInt("user_id"));
+				post.setCreatedDate(db.rs.getTimestamp("created_date"));
+				// 필요한 다른 필드들도 설정
+				results.add(post);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace(); // 로깅하는 것이 좋습니다.
+		} finally {
+			db.close(); // 자원 해제
+		}
+		return results;
+	}
+
+	public List<DataBoardDTO> searchPostsByContent(String query) {
+		List<DataBoardDTO> results = new ArrayList<>();
+		String sql = "SELECT * FROM databoard WHERE content LIKE ?";
+
+		DBConnection db = new DBConnection();
+		try {
+			db.prepareStatement(sql);
+			String keyword = "%" + query + "%";
+			db.psmt.setString(1, keyword);
 
 			db.rs = db.psmt.executeQuery();
 			while (db.rs.next()) {
