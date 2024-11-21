@@ -24,7 +24,8 @@ boolean isLoggedIn = (user != null);
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
 
 <!-- Custom CSS -->
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/header.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/resources/css/header.css">
 
 </head>
 <body>
@@ -34,7 +35,7 @@ boolean isLoggedIn = (user != null);
 		<div class="container">
 			<!-- 로고 -->
 			<a class="navbar-brand"
-				href="${pageContext.request.contextPath}/dashboard">게시판</a>
+				href="${pageContext.request.contextPath}/dashboard">대시보드</a>
 
 			<!-- 검색 바 -->
 			<div class="search-bar d-none d-lg-block me-auto">
@@ -76,6 +77,11 @@ boolean isLoggedIn = (user != null);
 					<%
 					if (isLoggedIn) {
 					%>
+					<!-- 메시지 아이콘 -->
+					<li class="nav-item"><a class="nav-link"
+						href="${pageContext.request.contextPath}/MessageController"> <i
+							class="bi bi-envelope-fill"></i> 쪽지
+					</a></li>
 					<!-- 프로필 이름 -->
 					<li class="nav-item"><a class="nav-link"
 						href="${pageContext.request.contextPath}/views/user/profile.jsp">

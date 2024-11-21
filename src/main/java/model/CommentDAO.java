@@ -191,4 +191,34 @@ public class CommentDAO {
 		return null;
 	}
 
+	// 자유게시판 게시글 작성자 ID 조회
+	public int getFreeboardPostAuthorId(int boardId) {
+		String query = "SELECT user_id FROM freeboard_posts WHERE board_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, boardId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("user_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1; // 작성자를 찾을 수 없을 경우
+	}
+
+	// 질문게시판 게시글 작성자 ID 조회
+	public int getQaboardPostAuthorId(int boardId) {
+		String query = "SELECT user_id FROM qaboard_posts WHERE board_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, boardId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("user_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1; // 작성자를 찾을 수 없을 경우
+	}
+
 }

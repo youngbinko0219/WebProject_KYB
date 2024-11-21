@@ -10,15 +10,29 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.CommentDAO;
 import model.CommentDTO;
+import model.FreeBoardDAO;
+import model.FreeBoardDTO;
+import model.MessageDAO;
+import model.MessageDTO;
+import model.QaBoardDAO;
+import model.QaBoardDTO;
+import model.UserDAO;
+import model.UserDTO;
 
 @WebServlet("/comment/*")
 public class CommentController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private CommentDAO commentDAO;
+	private MessageDAO messageDAO;
+	private FreeBoardDAO freeBoardDAO;
+	private QaBoardDAO qaBoardDAO;
 
 	@Override
 	public void init() throws ServletException {
 		commentDAO = new CommentDAO();
+		messageDAO = new MessageDAO();
+		freeBoardDAO = new FreeBoardDAO();
+		qaBoardDAO = new QaBoardDAO();
 	}
 
 	@Override
@@ -85,6 +99,23 @@ public class CommentController extends HttpServlet {
 			boolean success = commentDAO.addFreeboardComment(comment);
 
 			if (success) {
+				// UserDAO 객체를 사용해 현재 댓글 작성자의 username을 가져옴
+				UserDAO userDAO = new UserDAO(); // UserDAO 객체 생성
+				UserDTO user = userDAO.getUserById(userId); // userId를 사용해 사용자 정보 가져오기
+				String username = (user != null) ? user.getUsername() : "알 수 없는 사용자";
+
+				// 게시글 작성자 ID 가져오기
+				FreeBoardDTO post = freeBoardDAO.getPostById(boardId);
+				int postUserId = (post != null) ? post.getUserId() : -1;
+
+				// 댓글 작성 후 알림 메시지 생성 (작성자가 아닌 경우에만 전송)
+				if (postUserId != -1 && postUserId != userId) { // 자신이 작성한 글에 댓글을 달았을 때는 알림을 보내지 않음
+					MessageDTO message = new MessageDTO();
+					message.setReceiverId(postUserId); // 게시글 작성자가 수신자
+					message.setContent(username + "님이 게시글에 댓글을 달았습니다: " + content);
+					messageDAO.createNotificationMessage(message);
+				}
+
 				response.sendRedirect(request.getContextPath() + "/freeboard/view?id=" + boardId);
 			} else {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to add comment.");
@@ -117,6 +148,23 @@ public class CommentController extends HttpServlet {
 			boolean success = commentDAO.addQaboardComment(comment);
 
 			if (success) {
+				// UserDAO 객체를 사용해 현재 댓글 작성자의 username을 가져옴
+				UserDAO userDAO = new UserDAO(); // UserDAO 객체 생성
+				UserDTO user = userDAO.getUserById(userId); // userId를 사용해 사용자 정보 가져오기
+				String username = (user != null) ? user.getUsername() : "알 수 없는 사용자";
+
+				// 게시글 작성자 ID 가져오기
+				QaBoardDTO post = qaBoardDAO.getPostById(boardId);
+				int postUserId = (post != null) ? post.getUserId() : -1;
+
+				// 댓글 작성 후 알림 메시지 생성 (작성자가 아닌 경우에만 전송)
+				if (postUserId != -1 && postUserId != userId) { // 자신이 작성한 글에 댓글을 달았을 때는 알림을 보내지 않음
+					MessageDTO message = new MessageDTO();
+					message.setReceiverId(postUserId); // 게시글 작성자가 수신자
+					message.setContent(username + "님이 질문글에 댓글을 달았습니다: " + content);
+					messageDAO.createNotificationMessage(message);
+				}
+
 				response.sendRedirect(request.getContextPath() + "/qaboard/view?id=" + boardId);
 			} else {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to add comment.");

@@ -101,6 +101,58 @@ public class FreeBoardDAO {
 		return false;
 	}
 
+	// 특정 게시글의 좋아요 수 감소 (좋아요 취소 기능) // 수정
+	public boolean decrementLikeCount(int postId) {
+		String query = "UPDATE freeboard SET like_count = like_count - 1 WHERE id = ? AND like_count > 0";
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, postId);
+			return pstmt.executeUpdate() > 0; // 업데이트 성공 여부 반환
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	// 사용자가 특정 게시글에 좋아요를 눌렀는지 확인 (좋아요 상태 확인) // 추가
+	public boolean hasUserLikedPost(int userId, int postId) {
+		String query = "SELECT COUNT(*) FROM likes WHERE user_id = ? AND post_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, userId);
+			pstmt.setInt(2, postId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt(1) > 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	// 특정 게시글에 사용자 좋아요 추가 (좋아요 기능) // 추가
+	public void addUserLike(int userId, int postId) {
+		String query = "INSERT INTO likes (user_id, post_id) VALUES (?, ?)";
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, userId);
+			pstmt.setInt(2, postId);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// 특정 게시글에서 사용자 좋아요 제거 (좋아요 취소 기능) // 추가
+	public void removeUserLike(int userId, int postId) {
+		String query = "DELETE FROM likes WHERE user_id = ? AND post_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+			pstmt.setInt(1, userId);
+			pstmt.setInt(2, postId);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	// 특정 게시글의 좋아요 수 가져오기 (옵션, 필요 시 사용)
 	public int getLikeCount(int postId) {
 		String query = "SELECT like_count FROM freeboard WHERE id = ?";
@@ -213,18 +265,6 @@ public class FreeBoardDAO {
 			e.printStackTrace();
 		}
 		return null; // 조회 실패 시 null 반환
-	}
-
-	// 특정 게시글의 좋아요 수 감소 (좋아요 취소 기능)
-	public boolean decrementLikeCount(int postId) {
-		String query = "UPDATE freeboard SET like_count = like_count - 1 WHERE id = ? AND like_count > 0";
-		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-			pstmt.setInt(1, postId);
-			return pstmt.executeUpdate() > 0; // 업데이트 성공 여부 반환
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
 	}
 
 	public List<FreeBoardDTO> searchPostsByTitle(String query) {

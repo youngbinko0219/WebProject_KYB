@@ -13,16 +13,23 @@ import model.CommentDAO;
 import model.CommentDTO;
 import model.FreeBoardDAO;
 import model.FreeBoardDTO;
-import util.CookieUtil;
+import model.MessageDAO;
+import model.MessageDTO;
+import model.UserDAO;
+import model.UserDTO;
 
 @WebServlet("/freeboard/*")
 public class FreeBoardController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private FreeBoardDAO freeBoardDAO;
+	private MessageDAO messageDAO;
+	private UserDAO userDAO;
 
 	@Override
 	public void init() throws ServletException {
 		freeBoardDAO = new FreeBoardDAO();
+		messageDAO = new MessageDAO();
+		userDAO = new UserDAO();
 	}
 
 	@Override
@@ -182,22 +189,41 @@ public class FreeBoardController extends HttpServlet {
 
 	private void toggleLike(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		try {
+			HttpSession session = request.getSession();
+			Integer userId = (Integer) session.getAttribute("userId");
+
+			if (userId == null) {
+				response.sendRedirect(request.getContextPath() + "/views/user/login.jsp");
+				return;
+			}
+
 			int postId = Integer.parseInt(request.getParameter("id"));
 
-			// 쿠키 이름
-			String cookieName = "liked_posts";
-
-			// 게시글 ID가 쿠키에 포함되어 있는지 확인
-			boolean hasLiked = CookieUtil.containsValue(request, cookieName, String.valueOf(postId));
+			// 사용자가 이미 좋아요를 눌렀는지 확인
+			boolean hasLiked = freeBoardDAO.hasUserLikedPost(userId, postId);
 
 			if (hasLiked) {
 				// 좋아요 취소
 				freeBoardDAO.decrementLikeCount(postId); // 좋아요 수 감소
-				CookieUtil.removeValue(request, response, cookieName, String.valueOf(postId)); // 쿠키에서 제거
+				freeBoardDAO.removeUserLike(userId, postId); // 사용자 좋아요 기록 제거
 			} else {
 				// 좋아요 추가
 				freeBoardDAO.incrementLikeCount(postId); // 좋아요 수 증가
-				CookieUtil.addValue(request, response, cookieName, String.valueOf(postId)); // 쿠키에 추가
+				freeBoardDAO.addUserLike(userId, postId); // 사용자 좋아요 기록 추가
+
+				// 좋아요 추가 후 알림 메시지 생성 (작성자가 아닌 경우에만 전송)
+				FreeBoardDTO post = freeBoardDAO.getPostById(postId);
+				if (post != null && !userId.equals(post.getUserId())) {
+					UserDTO user = userDAO.getUserById(userId); // userId를 사용해 사용자 정보 가져오기
+					if (user != null) {
+						String username = user.getUsername(); // 사용자 이름 가져오기
+
+						MessageDTO message = new MessageDTO();
+						message.setReceiverId(post.getUserId()); // 게시글 작성자가 수신자
+						message.setContent(username + "님이 게시글에 좋아요를 눌렀습니다."); // 사용자 이름을 메시지에 포함
+						messageDAO.createNotificationMessage(message);
+					}
+				}
 			}
 
 			// 페이지 리다이렉트
