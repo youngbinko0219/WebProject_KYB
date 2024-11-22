@@ -77,10 +77,15 @@ boolean isLoggedIn = (user != null);
 					<%
 					if (isLoggedIn) {
 					%>
-					<!-- 메시지 아이콘 -->
+					<!-- 쪽지 아이콘 -->
 					<li class="nav-item"><a class="nav-link"
 						href="${pageContext.request.contextPath}/MessageController"> <i
 							class="bi bi-envelope-fill"></i> 쪽지
+					</a></li>
+					<!-- 메시지 아이콘 -->
+					<li class="nav-item"><a class="nav-link"
+						href="${pageContext.request.contextPath}/views/common/MultiChatMain.jsp">
+							<i class="bi bi-chat-fill"></i> 메시지
 					</a></li>
 					<!-- 프로필 이름 -->
 					<li class="nav-item"><a class="nav-link"

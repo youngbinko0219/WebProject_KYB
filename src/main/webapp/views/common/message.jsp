@@ -5,7 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>메시지함</title>
+<title>쪽지함</title>
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -87,16 +87,16 @@ function markAsRead(messageId) {
 <body>
 	<jsp:include page="/views/common/header.jsp" />
 	<header class="container py-3">
-		<h1 class="h3">메시지함</h1>
+		<h1 class="h3">쪽지함</h1>
 		<p class="text-muted">
-			읽지 않은 메시지: <span id="unreadCount" class="badge bg-danger">${unreadCount}</span>개
+			읽지 않은 쪽지: <span id="unreadCount" class="badge bg-danger">${unreadCount}</span>개
 		</p>
 	</header>
 
 	<main class="container">
 		<c:choose>
 			<c:when test="${empty messages}">
-				<div class="alert alert-info" role="alert">받은 메시지가 없습니다.</div>
+				<div class="alert alert-info" role="alert">받은 쪽지가 없습니다.</div>
 			</c:when>
 			<c:otherwise>
 				<ul class="message-list">
