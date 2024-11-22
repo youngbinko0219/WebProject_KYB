@@ -48,11 +48,11 @@
            */
           var notification = new Notification('Title 입니다', {
             icon : 'http://cfile201.uf.daum.net/image/235BFD3F5937AC17164572',
-            body : '여긴내용입니다. 클릭하면 KOSMO로 이동합니다.',
+            body : '대쉬보드로 이동합니다.',
           });
           //알림창을 클릭했을때 이동할 URL을 이벤트 핸들러에 등록한다. 
           notification.onclick = function() {
-            window.open('http://www.ikosmo.co.kr');
+            window.open('http://localhost:10078/WebProject_KYB/dashboard');
           };
         }
       }
