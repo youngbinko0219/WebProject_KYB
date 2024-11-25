@@ -36,7 +36,7 @@
                         </form>
                     </div>
                     <div class="card-footer text-center">
-                        <a href="${pageContext.request.contextPath}/login.jsp" class="custom-link">로그인 페이지로 돌아가기</a>
+                        <a href="${pageContext.request.contextPath}/views/user/login.jsp" class="custom-link">로그인 페이지로 돌아가기</a>
                     </div>
                 </div>
             </div>
